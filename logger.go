@@ -18,7 +18,7 @@
 //
 // 	// more functions!
 //	// ...
-//	logger = golog.Logger("my-module")
+//	logger = golog.GetLogger("my-module")
 //	logger.Infof("Hello: %s", someVar)
 //
 //	// the following will not do anything
@@ -27,72 +27,119 @@
 //
 // More elaborate example:
 //
-// golog.Logger("my-module").Info("Foobar!")
+// golog.GetLogger("my-module").Info("Foobar!")
 //
 package golog
 
 import "github.com/golang/glog"
 
-type logger struct {
-	config LogConfig
-}
-
-var loggers map[string]*logger = make(map[string]*logger)
 
 type LogConfig struct {
 	Prefix string
 	Level level
 }
 
+type Logger interface {
+	Fatal(args ...interface{})
+	Error(args ...interface{})
+	Warning(args ...interface{})
+	Info(args ...interface{})
+
+	Fatalf(message string, args ...interface{})
+	Errorf(message string, args ...interface{})
+	Warningf(message string, args ...interface{})
+	Infof(message string, args ...interface{})
+}
+
+type Glogger struct {}
+
+func (log *Glogger) Fatal(args ...interface{}) {
+	glog.Fatal(args...)
+}
+
+func (log *Glogger) Fatalf(message string, args ...interface{}) {
+	glog.Fatalf(message, args...)
+}
+
+func (log *Glogger) Error(args ...interface{}) {
+	glog.Error(args...)
+}
+
+func (log *Glogger) Errorf(message string, args ...interface{}) {
+	glog.Errorf(message, args...)
+}
+
+func (log *Glogger) Warning(args ...interface{}) {
+	glog.Warning(args...)
+}
+
+func (log *Glogger) Warningf(message string, args ...interface{}) {
+	glog.Warningf(message, args...)
+}
+
+func (log *Glogger) Info(args ...interface{}) {
+	glog.Info(args...)
+}
+
+func (log *Glogger) Infof(message string, args ...interface{}) {
+	glog.Infof(message, args...)
+}
+
+type logger struct {
+	config LogConfig
+	base Logger
+}
+
+
 func (log *logger) log(l level, args ...interface{}) {
 	if log.config.Level < l {
 		args = append([]interface{}{log.config.Prefix}, args...)
-		glog.Info(args...)
+		log.base.Info(args...)
 	}
 }
 
 func (log *logger) logf(l level, message string, args ...interface{}) {
 	if log.config.Level < l {
 		args = append([]interface{}{log.config.Prefix}, args...)
-		glog.Infof(message, args...)
+		log.base.Infof(message, args...)
 	}
 }
 
 func (log *logger) Fatal(args ...interface{}) {
 	args = append([]interface{}{log.config.Prefix}, args...)
-	glog.Fatal(args...)
+	log.base.Fatal(args...)
 }
 
 func (log *logger) Fatalf(message string, args ...interface{}) {
 	args = append([]interface{}{log.config.Prefix}, args...)
-	glog.Fatalf(message, args...)
+	log.base.Fatalf(message, args...)
 }
 
 func (log *logger) Error(args ...interface{}) {
 	if log.config.Level >= ERROR {
 		args = append([]interface{}{log.config.Prefix}, args...)
-		glog.Error(args...)
+		log.base.Error(args...)
 	}
 }
 
 func (log *logger) Errorf(message string, args ...interface{}) {
 	if log.config.Level >= ERROR {
 		args = append([]interface{}{log.config.Prefix}, args...)
-		glog.Errorf(message, args...)
+		log.base.Errorf(message, args...)
 	}
 }
 
 func (log *logger) Warn(args ...interface{}) {
 	if log.config.Level >= WARN {
 		args = append([]interface{}{log.config.Prefix}, args...)
-		glog.Warning(args...)
+		log.base.Warning(args...)
 	}
 }
 
 func (log *logger) Warnf(message string, args ...interface{}) {
 	if log.config.Level >= WARN {
 		args = append([]interface{}{log.config.Prefix}, args...)
-		glog.Warningf(message, args...)
+		log.base.Warningf(message, args...)
 	}
 }
 
@@ -125,7 +172,9 @@ func newLogger(config LogConfig) *logger {
 	return &logger{config: config}
 }
 
-func Logger(name string) *logger {
+var loggers map[string]*logger = make(map[string]*logger)
+
+func GetLogger(name string) *logger {
 	if logger, ok := loggers[name]; ok {
 		return logger
 	}
