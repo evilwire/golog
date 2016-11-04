@@ -602,7 +602,7 @@ func TestLogger_SkipVerbose(t *testing.T) {
 			Prefix: "[TestLogger_SkipVerbose]",
 		},
 		{
-			Level: WARN,
+			Level: DEBUG,
 			Prefix: "[TestLogger_SkipVerbose]",
 		},
 	}
@@ -639,7 +639,7 @@ func TestLogger_Verbose(t *testing.T) {
 		},
 		{
 			Config: LogConfig {
-				Level: DEBUG,
+				Level: VERBOSE,
 				Prefix: "[TestLogger-DEBUG]",
 			},
 			Messages: []interface{}{
@@ -657,7 +657,7 @@ func TestLogger_Verbose(t *testing.T) {
 		},
 		{
 			Config: LogConfig {
-				Level: DEBUG,
+				Level: VERBOSE,
 				Prefix: "Non-CIISA Préfix",
 			},
 			Messages: []interface{}{},
@@ -706,7 +706,7 @@ func TestLogger_SkipVerbosef(t *testing.T) {
 			Prefix: "[TestLogger_SkipVerbose]",
 		},
 		{
-			Level: WARN,
+			Level: DEBUG,
 			Prefix: "[TestLogger_SkipVerbose]",
 		},
 	}
@@ -734,7 +734,7 @@ func TestLogger_Verbosef(t *testing.T) {
 	}{
 		{
 			Config: LogConfig {
-				Level: INFO,
+				Level: VERBOSE,
 				Prefix: "[TestLogger]",
 			},
 			Messages: []interface{}{
@@ -744,7 +744,7 @@ func TestLogger_Verbosef(t *testing.T) {
 		},
 		{
 			Config: LogConfig {
-				Level: DEBUG,
+				Level: VERBOSE,
 				Prefix: "[TestLogger-DEBUG]",
 			},
 			Template: "%s",
@@ -795,7 +795,7 @@ func TestLogger_SkipInfo(t *testing.T) {
 			Prefix: "[TestLogger_SkipVerbose]",
 		},
 		{
-			Level: VERBOSE,
+			Level: WARN,
 			Prefix: "[TestLogger_SkipVerbose]",
 		},
 	}
@@ -832,7 +832,7 @@ func TestLogger_Info(t *testing.T) {
 		},
 		{
 			Config: LogConfig {
-				Level: DEBUG,
+				Level: INFO,
 				Prefix: "[TestLogger-DEBUG]",
 			},
 			Messages: []interface{}{
@@ -841,7 +841,7 @@ func TestLogger_Info(t *testing.T) {
 		},
 		{
 			Config: LogConfig {
-				Level: DEBUG,
+				Level: INFO,
 				Prefix: "",
 			},
 			Messages: []interface{}{
@@ -850,7 +850,7 @@ func TestLogger_Info(t *testing.T) {
 		},
 		{
 			Config: LogConfig {
-				Level: DEBUG,
+				Level: INFO,
 				Prefix: "Non-CIISA Préfix",
 			},
 			Messages: []interface{}{},
@@ -899,7 +899,7 @@ func TestLogger_SkipInfof(t *testing.T) {
 			Prefix: "[TestLogger_SkipVerbose]",
 		},
 		{
-			Level: VERBOSE,
+			Level: WARN,
 			Prefix: "[TestLogger_SkipVerbose]",
 		},
 	}
@@ -937,7 +937,7 @@ func TestLogger_Infof(t *testing.T) {
 		},
 		{
 			Config: LogConfig {
-				Level: DEBUG,
+				Level: INFO,
 				Prefix: "[TestLogger-DEBUG]",
 			},
 			Template: "%s",

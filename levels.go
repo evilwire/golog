@@ -22,14 +22,15 @@ const (
 	// logging errors and warning
 	WARN = level(2)
 
-	// first level of text-based logging
-	VERBOSE = level(3)
-
 	// second level of text-based logging
-	INFO = level(4)
+	INFO = level(3)
 
 	// third and last level of text-based logging
-	DEBUG = level(5)
+	DEBUG = level(4)
+
+	// first level of text-based logging
+	VERBOSE = level(5)
+
 )
 
 // Retrieve a certain level by name, and if the name is not recognised returns NOLOG,
