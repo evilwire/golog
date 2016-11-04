@@ -2,6 +2,7 @@ package golog
 
 import "testing"
 
+
 func TestGetLevel(t *testing.T) {
 	testCases := []struct {
 		Input string

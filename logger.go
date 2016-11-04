@@ -55,127 +55,116 @@ type Logger interface {
 	Infof(message string, args ...interface{})
 }
 
-type glogger struct {}
+// Abstract out the glog.Fatal and glog.Fatalf functions for
+// unit testing
+type logFun func (args ...interface{})
+type logfFun func (message string, args ...interface{})
 
-func (log *glogger) Fatal(args ...interface{}) {
-	glog.Fatal(args...)
-}
-
-func (log *glogger) Fatalf(message string, args ...interface{}) {
-	glog.Fatalf(message, args...)
-}
-
-func (log *glogger) Error(args ...interface{}) {
-	glog.Error(args...)
-}
-
-func (log *glogger) Errorf(message string, args ...interface{}) {
-	glog.Errorf(message, args...)
-}
-
-func (log *glogger) Warning(args ...interface{}) {
-	glog.Warning(args...)
-}
-
-func (log *glogger) Warningf(message string, args ...interface{}) {
-	glog.Warningf(message, args...)
-}
-
-func (log *glogger) Info(args ...interface{}) {
-	glog.Info(args...)
-}
-
-func (log *glogger) Infof(message string, args ...interface{}) {
-	glog.Infof(message, args...)
-}
 
 type logger struct {
 	config LogConfig
-	base Logger
+
+	fatal logFun
+	fatalf logfFun
+
+	error logFun
+	errorf logfFun
+
+	warn logFun
+	warnf logfFun
+
+	info logFun
+	infof logfFun
 }
 
 
 func (log *logger) log(l level, args ...interface{}) {
 	if log.config.Level >= l {
 		args = append([]interface{}{log.config.Prefix}, args...)
-		log.base.Info(args...)
+		log.info(args...)
 	}
 }
 
 func (log *logger) logf(l level, message string, args ...interface{}) {
 	if log.config.Level >= l {
-		args = append([]interface{}{log.config.Prefix}, args...)
-		log.base.Infof(message, args...)
+		message = log.config.Prefix + message
+		log.infof(message, args...)
 	}
 }
 
 func (log *logger) Fatal(args ...interface{}) {
 	args = append([]interface{}{log.config.Prefix}, args...)
-	log.base.Fatal(args...)
+	log.fatal(args...)
 }
 
 func (log *logger) Fatalf(message string, args ...interface{}) {
-	args = append([]interface{}{log.config.Prefix}, args...)
-	log.base.Fatalf(message, args...)
+	message = log.config.Prefix + message
+	log.fatalf(message, args...)
 }
 
 func (log *logger) Error(args ...interface{}) {
 	if log.config.Level >= ERROR {
 		args = append([]interface{}{log.config.Prefix}, args...)
-		log.base.Error(args...)
+		log.error(args...)
 	}
 }
 
 func (log *logger) Errorf(message string, args ...interface{}) {
 	if log.config.Level >= ERROR {
-		args = append([]interface{}{log.config.Prefix}, args...)
-		log.base.Errorf(message, args...)
+		message = log.config.Prefix + message
+		log.errorf(message, args...)
 	}
 }
 
 func (log *logger) Warn(args ...interface{}) {
 	if log.config.Level >= WARN {
 		args = append([]interface{}{log.config.Prefix}, args...)
-		log.base.Warning(args...)
+		log.warn(args...)
 	}
 }
 
 func (log *logger) Warnf(message string, args ...interface{}) {
 	if log.config.Level >= WARN {
-		args = append([]interface{}{log.config.Prefix}, args...)
-		log.base.Warningf(message, args...)
+		message = log.config.Prefix + message
+		log.warnf(message, args...)
 	}
 }
 
 func (log *logger) Verbose(args ...interface{}) {
-	args = append([]interface{}{log.config.Prefix}, args...)
 	log.log(VERBOSE, args...)
 }
 
 func (log *logger) Verbosef(message string, args ...interface{}) {
-	args = append([]interface{}{log.config.Prefix}, args...)
 	log.logf(VERBOSE, message, args...)
 }
 
 func (log *logger) Info(args ...interface{}) {
-	args = append([]interface{}{log.config.Prefix}, args...)
 	log.log(INFO, args...)
 }
 
 func (log *logger) Infof(message string, args ...interface{}) {
-	args = append([]interface{}{log.config.Prefix}, args...)
 	log.logf(INFO, message, args...)
 }
 
 func (log *logger) Debug(args ...interface{}) {
-	args = append([]interface{}{log.config.Prefix}, args...)
 	log.log(DEBUG, args...)
+}
+
+func (log *logger) Debugf(message string, args ...interface{}) {
+	log.logf(DEBUG, message, args...)
 }
 
 func newLogger(config LogConfig) *logger {
 	return &logger{
 		config: config,
-		base: &glogger{},
+		fatal:  glog.Fatal,
+		fatalf: glog.Fatalf,
+		error:  glog.Error,
+		errorf: glog.Errorf,
+		warn:   glog.Warning,
+		warnf:  glog.Warningf,
+		info:    glog.Info,
+		infof:   glog.Infof,
 	}
 }
 
