@@ -34,11 +34,15 @@ package golog
 import "github.com/golang/glog"
 
 
+// Configuration
+//
 type LogConfig struct {
 	Prefix string
 	Level level
 }
 
+// Logger
+//
 type Logger interface {
 	Fatal(args ...interface{})
 	Error(args ...interface{})
@@ -51,37 +55,37 @@ type Logger interface {
 	Infof(message string, args ...interface{})
 }
 
-type Glogger struct {}
+type glogger struct {}
 
-func (log *Glogger) Fatal(args ...interface{}) {
+func (log *glogger) Fatal(args ...interface{}) {
 	glog.Fatal(args...)
 }
 
-func (log *Glogger) Fatalf(message string, args ...interface{}) {
+func (log *glogger) Fatalf(message string, args ...interface{}) {
 	glog.Fatalf(message, args...)
 }
 
-func (log *Glogger) Error(args ...interface{}) {
+func (log *glogger) Error(args ...interface{}) {
 	glog.Error(args...)
 }
 
-func (log *Glogger) Errorf(message string, args ...interface{}) {
+func (log *glogger) Errorf(message string, args ...interface{}) {
 	glog.Errorf(message, args...)
 }
 
-func (log *Glogger) Warning(args ...interface{}) {
+func (log *glogger) Warning(args ...interface{}) {
 	glog.Warning(args...)
 }
 
-func (log *Glogger) Warningf(message string, args ...interface{}) {
+func (log *glogger) Warningf(message string, args ...interface{}) {
 	glog.Warningf(message, args...)
 }
 
-func (log *Glogger) Info(args ...interface{}) {
+func (log *glogger) Info(args ...interface{}) {
 	glog.Info(args...)
 }
 
-func (log *Glogger) Infof(message string, args ...interface{}) {
+func (log *glogger) Infof(message string, args ...interface{}) {
 	glog.Infof(message, args...)
 }
 
@@ -92,14 +96,14 @@ type logger struct {
 
 
 func (log *logger) log(l level, args ...interface{}) {
-	if log.config.Level < l {
+	if log.config.Level >= l {
 		args = append([]interface{}{log.config.Prefix}, args...)
 		log.base.Info(args...)
 	}
 }
 
 func (log *logger) logf(l level, message string, args ...interface{}) {
-	if log.config.Level < l {
+	if log.config.Level >= l {
 		args = append([]interface{}{log.config.Prefix}, args...)
 		log.base.Infof(message, args...)
 	}
@@ -169,7 +173,10 @@ func (log *logger) Debug(args ...interface{}) {
 }
 
 func newLogger(config LogConfig) *logger {
-	return &logger{config: config}
+	return &logger{
+		config: config,
+		base: &glogger{},
+	}
 }
 
 var loggers map[string]*logger = make(map[string]*logger)
@@ -181,14 +188,14 @@ func GetLogger(name string) *logger {
 
 	l := newLogger(LogConfig{
 		Level: DEBUG,
-		Prefix: "[" + name + "]",
+		Prefix: "[" + name + "] ",
 	})
 
 	loggers[name] = l
 	return l
 }
 
-func Setup(name string, logConfig *LogConfig) {
-	l := newLogger(*logConfig)
+func Setup(name string, logConfig LogConfig) {
+	l := newLogger(logConfig)
 	loggers[name] = l
 }
